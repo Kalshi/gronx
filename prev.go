@@ -23,12 +23,7 @@ func PrevTickBefore(expr string, start time.Time, inclRefTime bool) (time.Time, 
 		return prev, fmt.Errorf("unreachable year segment: %s", segments[6])
 	}
 
-	prev, err = loop(gron, segments, prev, inclRefTime, true)
-	// Ignore superfluous err
-	if err != nil && gron.isDue(expr, prev) {
-		err = nil
-	}
-	return prev, err
+	return loop(gron, segments, prev, inclRefTime, true)
 }
 
 func bumpReverse(ref time.Time, pos int) time.Time {

@@ -33,12 +33,7 @@ func NextTickAfter(expr string, start time.Time, inclRefTime bool) (time.Time, e
 		return next, fmt.Errorf("unreachable year segment: %s", segments[6])
 	}
 
-	next, err = loop(gron, segments, next, inclRefTime, false)
-	// Ignore superfluous err
-	if err != nil && gron.isDue(expr, next) {
-		err = nil
-	}
-	return next, err
+	return loop(gron, segments, next, inclRefTime, false)
 }
 
 func loop(gron *Gronx, segments []string, start time.Time, incl bool, reverse bool) (next time.Time, err error) {
@@ -160,7 +155,8 @@ func bumpUntilDue(c Checker, segment string, pos int, ref time.Time, reverse boo
 		}
 		iter--
 	}
-	return ref, false, errors.New("tried so hard")
+	// The search advanced even if this field is not due; recheck earlier fields.
+	return ref, true, errors.New("tried so hard")
 }
 
 func bump(ref time.Time, pos int) time.Time {
